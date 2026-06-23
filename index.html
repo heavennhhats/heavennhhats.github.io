@@ -55,8 +55,8 @@ function obtenerCodigoDesdeURL() {
 
 const codigoGorra = obtenerCodigoDesdeURL();
 
-const SUPABASE_URL = "https://pivqqnjllzdxgrvascvh.supabase.co/rest/v1/";
-const SUPABASE_KEY = "sb_publishable_KZUL2GKpO2bA5rDdZ36pXQ_hHZTflvs";
+const SUPABASE_URL = "https://pivqqnjllzdxgrvascvh.supabase.co/rest/v1";
+const SUPABASE_KEY = "sb_publishable_1mJEX3PO4ocppoS_wui12g_XxX6UyMt";
 
 
 async function actualizarContador() {
@@ -69,7 +69,7 @@ async function actualizarContador() {
     try {
 
         const respuesta = await fetch(
-            `${SUPABASE_URL}/LINKS_DE_VERIFICACION?IDGORRA=eq.${codigoGorra}&select=*`,
+            `${SUPABASE_URL}/CHIPS_GORRAS=eq.${codigoGorra}&select=*`,
             {
                 headers: {
                     "apikey": SUPABASE_KEY,
@@ -103,7 +103,7 @@ async function actualizarContador() {
 
 
         const actualizar = await fetch(
-            `${SUPABASE_URL}/LINKS_DE_VERIFICACION?IDGORRA=eq.${codigoGorra}`,
+            `${SUPABASE_URL}/CHIPS_GORRAS?IDGORRA=eq.${codigoGorra}`,
             {
                 method: "PATCH",
 
