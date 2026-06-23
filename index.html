@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>HEAVEN HATS</title>
+
+<style>
+
+@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@500&display=swap');
+
+body{
+    margin:0;
+    padding:0;
+    height:100vh;
+
+    background-size:cover;
+    background-position:center;
+    background-repeat:no-repeat;
+
+    position:relative;
+}
+
+#contador{
+    position:absolute;
+    top:77%;
+    left:50%;
+
+    transform:translate(-50%,-50%);
+
+    font-family:'Oswald', sans-serif;
+    font-size:36px;
+    font-weight:500;
+
+    color:#444444;
+
+    text-align:center;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div id="contador">Cargando...</div>
+
+<script>
+
+function obtenerCodigoDesdeURL() {
+    const params = new URLSearchParams(window.location.search);
+    return params.get('codigo');
+}
+
+const codigoGorra = obtenerCodigoDesdeURL();
+
+const SUPABASE_URL = "https://fbecjsryzhkeekgozzrd.supabase.co/rest/v1";
+const SUPABASE_KEY = "sb_publishable_KZUL2GKpO2bA5rDdZ36pXQ_hHZTflvs";
+
+
+async function actualizarContador() {
+
+    if (!codigoGorra) {
+        document.getElementById("contador").innerText = "Sin código";
+        return;
+    }
+
+    try {
+
+        const respuesta = await fetch(
+            `${SUPABASE_URL}/LINKS_DE_VERIFICACION?IDGORRA=eq.${codigoGorra}&select=*`,
+            {
+                headers: {
+                    "apikey": SUPABASE_KEY,
+                    "Authorization": `Bearer ${SUPABASE_KEY}`
+                }
+            }
+        );
+
+
+        const datos = await respuesta.json();
+
+
+        if (!datos || datos.length === 0) {
+            document.getElementById("contador").innerText = "No existe";
+            return;
+        }
+
+
+        const imagen = datos[0].IMAGEN;
+
+
+        if (imagen) {
+            document.body.style.backgroundImage = `url('${imagen}')`;
+        }
+
+
+        let contadorActual = Number(datos[0].CONTADOR || 0);
+
+
+        contadorActual++;
+
+
+        const actualizar = await fetch(
+            `${SUPABASE_URL}/LINKS_DE_VERIFICACION?IDGORRA=eq.${codigoGorra}`,
+            {
+                method: "PATCH",
+
+                headers: {
+                    "apikey": SUPABASE_KEY,
+                    "Authorization": `Bearer ${SUPABASE_KEY}`,
+                    "Content-Type": "application/json",
+                    "Prefer": "return=representation"
+                },
+
+                body: JSON.stringify({
+                    CONTADOR: contadorActual
+                })
+            }
+        );
+
+
+        if (!actualizar.ok) {
+
+            document.getElementById("contador").innerText = "Error UPDATE";
+            return;
+
+        }
+
+
+        document.getElementById("contador").innerText = contadorActual;
+
+
+    } catch (error) {
+
+        console.error(error);
+
+        document.getElementById("contador").innerText = "Error";
+
+    }
+
+}
+
+
+actualizarContador();
+
+
+</script>
+
+</body>
+</html>
